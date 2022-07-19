@@ -1,5 +1,6 @@
 package com.william.lendtech.transaction;
 
+import com.william.lendtech.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private float amount;
 
     @Temporal(TemporalType.TIMESTAMP) // converts back and forth between timestamp and java.util.Date
     @Column(name="transactionDateTime", nullable = false)
@@ -28,9 +30,15 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    private Long creditUserId;
-    private Long debitUserId;
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "creditUserId")
+    private User creditUser;
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "debitUserId")
+    private User debitUser;
     private String description;
+
 
 
     @PrePersist
@@ -45,8 +53,8 @@ public class Transaction {
                 "id=" + id +
                 ", transactionDateTime=" + transactionDateTime +
                 ", transactionType=" + transactionType +
-                ", creditUserId=" + creditUserId +
-                ", debitUserId=" + debitUserId +
+                ", creditUserId=" +  (creditUser != null ? creditUser.getFirstName() : "") +
+                ", debitUserId=" + (debitUser != null ? debitUser.getFirstName() : "") +
                 ", description='" + description + '\'' +
                 '}';
     }

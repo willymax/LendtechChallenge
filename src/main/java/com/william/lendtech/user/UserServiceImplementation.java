@@ -1,8 +1,12 @@
 package com.william.lendtech.user;
 
+import com.william.lendtech.transaction.Transaction;
+import com.william.lendtech.transaction.TransactionServiceImplementation;
+import com.william.lendtech.transaction.TransactionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author william makau
@@ -27,6 +32,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final TransactionServiceImplementation  transactionServiceImplementation;
+
 
     @Override
     public User saveUser(User user) {
@@ -36,7 +43,42 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
     @Override
+    public User getUserProfile() {
+        User currentUser = getLoggedInUser();
+        return currentUser;
+    }
+
+
+    @Override
     public User getUser(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    /**
+     * NOTE: the implementation BELOW in not scalable for calculating user balance,
+     * As the amount of transactions grows, the transaction will take long
+     *
+     */
+    @Override
+    public float getCurrentBalance() {
+        // THIS IMPLEMENTATION IS NOT SCALABLE
+        List<Transaction> userTransactions = transactionServiceImplementation.allUserTransactions(getLoggedInUser().getId());
+        double totalDebit = userTransactions.stream().filter(o -> o.getTransactionType().equals(TransactionType.DEBIT)).mapToDouble(Transaction::getAmount).sum();
+        double totalCredit = userTransactions.stream().filter(o -> o.getTransactionType().equals(TransactionType.CREDIT)).mapToDouble(Transaction::getAmount).sum();
+
+        return (float) (totalDebit - totalCredit);
+    }
+
+
+
+    public User getLoggedInUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
         return userRepository.findByUsername(username);
     }
 

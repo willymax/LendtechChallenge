@@ -5,8 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import com.william.lendtech.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,10 +30,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * Date 2022-07-19
  * Email: william.k.makau@gmail.com
  */
-@RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().equals("/api/login")) {
@@ -41,13 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
-                    int beginIndex = "Bearer ".length();
-                    String theToken = authorizationHeader.substring(beginIndex);
-                    log.info("the token is {} {}", theToken, "Bearer ".length());
+                    String theToken = authorizationHeader.substring("Bearer ".length());
                     Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT  decodedJWT = verifier.verify(theToken);
                     String username = decodedJWT.getSubject();
+
                     UsernamePasswordAuthenticationToken passwordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, null);
                     SecurityContextHolder.getContext().setAuthentication(passwordAuthenticationToken);
                     filterChain.doFilter(request, response);

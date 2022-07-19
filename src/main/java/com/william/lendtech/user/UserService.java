@@ -1,5 +1,7 @@
 package com.william.lendtech.user;
 
+import java.util.List;
+
 /**
  * @author william makau
  * @version 1.0.0
@@ -8,5 +10,9 @@ package com.william.lendtech.user;
  */
 public interface UserService {
     User saveUser(User user);
+    User getUserProfile();
     User getUser(String username);
+    List<User> findAll();
+
+    float getCurrentBalance();
 }

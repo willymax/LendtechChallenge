@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -29,5 +26,14 @@ public class UserController {
     public ResponseEntity<User> saveUser(@RequestBody User user) {
         URI uri= URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
         return ResponseEntity.created(uri).body(userServiceImplementation.saveUser(user));
+    }
+
+    @GetMapping("/user/profile")
+    public ResponseEntity<User> getUserProfile() {
+        return ResponseEntity.ok().body(userServiceImplementation.getUserProfile());
+    }
+    @GetMapping("/user/balance")
+    public ResponseEntity<Float> getUserBalance() {
+        return ResponseEntity.ok().body(userServiceImplementation.getCurrentBalance());
     }
 }

@@ -11,6 +11,7 @@ public class SecurityConstants {
     public static final String REGISTRATION_REQUEST_URI = "/register";
 
     public static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+    public static final long REFRESH_EXPIRATION_TIME = 48 * 60 * 60 * 1000;
 
     public static final String SECRET_KEY = "mySecretKey";
 
