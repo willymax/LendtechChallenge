@@ -16,6 +16,9 @@
 	<properties>
 		<java.version>13</java.version>
 	</properties>
+	<build>
+		<finalName>lendtech-william-0.0.1-SNAPSHOT</finalName>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
