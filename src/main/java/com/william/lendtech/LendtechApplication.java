@@ -10,8 +10,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -54,6 +56,11 @@ public class LendtechApplication {
 				transactionRepository.save(new Transaction(null, (float) faker.number().numberBetween(100, 10000), null, allUsers.stream().filter(item -> item.getId() == firstUserId).findFirst().get(), allUsers.stream().filter(item -> item.getId() == secondUserId).findFirst().get(), "transaction description"));
 			}
 		};
+	}
+
+	@EventListener(ApplicationReadyEvent.class)
+	public void runAfterStartup() {
+		log.info("********The application has started**********");
 	}
 
 	@Bean
