@@ -27,9 +27,6 @@ public class Transaction {
     @Column(name="transactionDateTime", nullable = false)
     private Date transactionDateTime;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
-
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "creditUserId")
     private User creditUser;
@@ -52,7 +49,6 @@ public class Transaction {
         return "Transaction{" +
                 "id=" + id +
                 ", transactionDateTime=" + transactionDateTime +
-                ", transactionType=" + transactionType +
                 ", creditUserId=" +  (creditUser != null ? creditUser.getFirstName() : "") +
                 ", debitUserId=" + (debitUser != null ? debitUser.getFirstName() : "") +
                 ", description='" + description + '\'' +

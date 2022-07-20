@@ -9,5 +9,4 @@ class LendtechApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

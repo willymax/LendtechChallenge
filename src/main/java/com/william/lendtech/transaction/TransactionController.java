@@ -35,9 +35,8 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions/all")
-    public List<Transaction> getPaginatedTransactions(@RequestParam(required=true) int pageNo,
-                                                      @RequestParam(required=true) int pageSize) {
+    public ResponseEntity<List<TransactionDto>> getAllTransactions(@RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 
-        return transactionServiceImplementation.findPaginated(pageNo, pageSize);
+        return ResponseEntity.ok().body(transactionServiceImplementation.findPaginated(pageNo, pageSize, userServiceImplementation.getLoggedInUser().getId()));
     }
 }

@@ -2,7 +2,6 @@ package com.william.lendtech.user;
 
 import com.william.lendtech.transaction.Transaction;
 import com.william.lendtech.transaction.TransactionServiceImplementation;
-import com.william.lendtech.transaction.TransactionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -66,10 +65,11 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
      */
     @Override
     public float getCurrentBalance() {
-        // THIS IMPLEMENTATION IS NOT SCALABLE
-        List<Transaction> userTransactions = transactionServiceImplementation.allUserTransactions(getLoggedInUser().getId());
-        double totalDebit = userTransactions.stream().filter(o -> o.getTransactionType().equals(TransactionType.DEBIT)).mapToDouble(Transaction::getAmount).sum();
-        double totalCredit = userTransactions.stream().filter(o -> o.getTransactionType().equals(TransactionType.CREDIT)).mapToDouble(Transaction::getAmount).sum();
+        // THIS IMPLEMENTATION IS NOT SCALABLE(performance will go down with more transactions)
+        User loggedInUser = getLoggedInUser();
+        List<Transaction> userTransactions = transactionServiceImplementation.allUserTransactions(loggedInUser.getId());
+        double totalDebit = userTransactions.stream().filter(o -> o.getDebitUser().equals(loggedInUser)).mapToDouble(Transaction::getAmount).sum();
+        double totalCredit = userTransactions.stream().filter(o -> o.getCreditUser().equals(loggedInUser)).mapToDouble(Transaction::getAmount).sum();
 
         return (float) (totalDebit - totalCredit);
     }

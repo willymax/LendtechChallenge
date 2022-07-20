@@ -24,17 +24,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TransactionServiceImplementation implements  TransactionService{
     private final TransactionRepository transactionRepository;
-
-
-
     private final ModelMapper modelMapper;
 
     @Override
-    public List<Transaction> findPaginated(int pageNo, int pageSize) {
-        Pageable paging = PageRequest.of(pageNo, pageSize);
-        Page<Transaction> pagedResult = transactionRepository.findAll(paging);
+    public List<TransactionDto> findPaginated(int pageNo, int pageSize, Long userId) {
+        List<Transaction> transactions = transactionRepository.findUserTransactions(userId);
 
-        return pagedResult.toList();
+        return transformTransactions(transactions, userId);
     }
 
     @Override
@@ -42,9 +38,23 @@ public class TransactionServiceImplementation implements  TransactionService{
         Pageable paging = PageRequest.of(1, 10);
 
         List<Transaction> transactions = transactionRepository.findRecentTransactions(userId);
+        return  transformTransactions(transactions, userId);
 
+    }
+
+    private List<TransactionDto> transformTransactions(List<Transaction> transactions, Long userId ) {
         return transactions.stream()
-                .map(this::convertToDto)
+                .map(currentTransaction -> {
+                    TransactionDto mappedTransactionDto = convertToDto(currentTransaction);
+                    if (mappedTransactionDto.getCreditUser().getId() == userId) {
+                        mappedTransactionDto.setTransactionType("Sent");
+                        mappedTransactionDto.setCreditUser(null);
+                    } else {
+                        mappedTransactionDto.setTransactionType("Received");
+                        mappedTransactionDto.setDebitUser(null);
+                    }
+                    return mappedTransactionDto;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -1,7 +1,5 @@
 package com.william.lendtech.security.dto;
 
-import com.william.lendtech.transaction.TransactionType;
-import com.william.lendtech.user.User;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +21,6 @@ public class TransactionDto {
     private Date transactionDateTime;
     private UserDto creditUser;
     private UserDto debitUser;
-    private TransactionType transactionType;
     private String description;
+    private String transactionType;
 }

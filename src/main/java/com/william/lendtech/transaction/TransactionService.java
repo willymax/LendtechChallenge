@@ -12,7 +12,7 @@ import java.util.List;
  * Email: william.k.makau@gmail.com
  */
 public interface TransactionService {
-    List<Transaction> findPaginated(int pageNo, int pageSize);
+    List<TransactionDto> findPaginated(int pageNo, int pageSize, Long userId);
     List<TransactionDto> findRecentTransactions(Long userId);
     List<Transaction> allUserTransactions(Long userId);
 
