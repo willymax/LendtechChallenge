@@ -4,13 +4,14 @@ import com.github.javafaker.Faker;
 import com.william.lendtech.transaction.Transaction;
 import com.william.lendtech.transaction.TransactionRepository;
 import com.william.lendtech.user.User;
-import com.william.lendtech.user.UserServiceImplementation;
+import com.william.lendtech.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -21,7 +22,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.william.lendtech.*.*"})
 @Slf4j
 public class LendtechApplication {
 
@@ -29,17 +30,18 @@ public class LendtechApplication {
 		SpringApplication.run(LendtechApplication.class, args);
 	}
 	@Bean
-	public CommandLineRunner initializeData(TransactionRepository transactionRepository, UserServiceImplementation userServiceImplementation) {
+	@Profile("!test")
+	public CommandLineRunner initializeData(TransactionRepository transactionRepository, UserRepository userRepository) {
 		return (args) -> {
 			Faker faker = new Faker();
 
 			// creating a few transactions
 			for (int i = 0; i < 20; i++) {
-				userServiceImplementation.saveUser(new User(-1, faker.name().firstName(), faker.name().lastName(), faker.name().username(), "password"));
+				userRepository.save(new User(-1, faker.name().firstName(), faker.name().lastName(), faker.name().username(), "password"));
 			}
-			userServiceImplementation.saveUser(new User(-1, "William", "Makau", "willymax", "password"));
+			userRepository.save(new User(-1, "William", "Makau", "willymax", "password"));
 
-			List<User> allUsers = userServiceImplementation.findAll();
+			List<User> allUsers = userRepository.findAll();
 
 
 			Random random = new Random();
